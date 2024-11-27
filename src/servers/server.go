@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/static"
 
 	"github.com/kylerequez/marketify/src/handlers"
@@ -46,6 +47,10 @@ func (server *MarketifyServer) Run() error {
 	})
 
 	app.Use("/styles", static.New("./src/public/"))
+	app.Use("/javascript", static.New("./src/public/js"))
+	app.Use(logger.New(logger.Config{
+		Format: "${pid} ${locals:requestid} ${status} - ${method} ${path}\n",
+	}))
 
 	if err := handlers.Init(app); err != nil {
 		return err
