@@ -1,0 +1,24 @@
+package components
+
+import "github.com/kylerequez/marketify/src/shared"
+
+templ LoginForm(
+	form shared.LoginFormData,
+) {
+	<form hx-post="/api/v1/auth/login" hx-swap="outerHTML" hx-target="this">
+		<label for="email">Email</label>
+		<input type="email" id="email" name="email" value={ form.Email }/>
+		if form.Errors["email"] != "" {
+			<span>{ form.Errors["email"] }</span>
+		}
+		<label for="password">Password</label>
+		<input type="password" id="password" name="password" value={ form.Password }/>
+		if form.Errors["password"] != "" {
+			<span>{ form.Errors["password"] }</span>
+		}
+		if form.Errors["form"] != "" {
+			<span>{ form.Errors["form"] }</span>
+		}
+		<button type="submit">Login</button>
+	</form>
+}

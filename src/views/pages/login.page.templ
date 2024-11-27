@@ -1,0 +1,14 @@
+package pages 
+
+import "github.com/kylerequez/marketify/src/shared"
+import "github.com/kylerequez/marketify/src/views/layouts"
+import "github.com/kylerequez/marketify/src/views/components"
+
+templ Login(
+	info shared.PageInfo,
+	form shared.LoginFormData,
+) {
+	@layouts.Main(info) {
+		@components.LoginForm(form)
+	}
+}

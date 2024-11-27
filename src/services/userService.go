@@ -1,14 +1,17 @@
 package services
 
 import (
-	"errors"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/gofiber/fiber/v3"
 
 	"github.com/kylerequez/marketify/src/repositories"
+	"github.com/kylerequez/marketify/src/shared"
 	"github.com/kylerequez/marketify/src/utils"
+	"github.com/kylerequez/marketify/src/views/components"
+	"github.com/kylerequez/marketify/src/views/pages"
 )
 
 type UserService struct {
@@ -21,7 +24,27 @@ func NewUserService(ur *repositories.UserRepository) *UserService {
 	}
 }
 
+func (us *UserService) GetLoginPage(c fiber.Ctx) error {
+	info := shared.PageInfo{
+		Title: "Login",
+		Path:  c.Path(),
+	}
+
+	form := shared.LoginFormData{}
+
+	return utils.Render(c, pages.Login(info, form))
+}
+
 func (us *UserService) LoginUser(c fiber.Ctx) error {
+	info := shared.PageInfo{
+		Title: "Login",
+		Path:  c.Path(),
+	}
+
+	form := shared.LoginFormData{
+		Errors: make(map[string]string),
+	}
+
 	type RequestBody struct {
 		Email    string
 		Password string
@@ -29,49 +52,40 @@ func (us *UserService) LoginUser(c fiber.Ctx) error {
 
 	body := new(RequestBody)
 	if err := c.Bind().Body(body); err != nil {
-		return err
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, pages.Login(info, form))
 	}
 
+	form.Email = body.Email
+	form.Password = body.Password
+
 	hasError := false
-	errors := make(map[string]string)
 	if err := utils.ValidateEmail(body.Email); err != nil {
 		hasError = true
-		errors["email"] = err.Error()
+		form.Errors["email"] = err.Error()
 	}
 
 	if err := utils.ValidatePassword(body.Password); err != nil {
 		hasError = true
-		errors["password"] = err.Error()
+		form.Errors["password"] = err.Error()
 	}
 
 	if hasError {
-		return c.JSON(
-			fiber.Map{
-				"success": "false",
-				"errors":  errors,
-			},
-		)
+		return utils.Render(c, components.LoginForm(form))
 	}
 
 	user, err := us.Ur.GetUserByEmail(c.Context(), body.Email)
 	if err != nil {
-		return c.JSON(
-			fiber.Map{
-				"success": "false",
-				"error":   err.Error(),
-			},
-		)
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.LoginForm(form))
 	}
 
 	if err := utils.ComparePassword(user.Password, []byte(body.Password)); err != nil {
-		return c.JSON(
-			fiber.Map{
-				"success": "false",
-				"error":   err.Error(),
-			},
-		)
+		form.Errors["password"] = err.Error()
+		return utils.Render(c, components.LoginForm(form))
 	}
 
+	log.Print("HER")
 	return c.SendStatus(http.StatusOK)
 }
 

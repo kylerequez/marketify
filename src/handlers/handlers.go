@@ -35,5 +35,10 @@ func Init(app *fiber.App) error {
 		return err
 	}
 
+	ah := NewAuthHandler(app, us)
+	if err := ah.Init(); err != nil {
+		return err
+	}
+
 	return nil
 }
