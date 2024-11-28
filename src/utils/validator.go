@@ -54,3 +54,32 @@ func ValidatePassword(password string) error {
 
 	return nil
 }
+
+func ValidateAge(age uint) error {
+	if int(age) == 0 {
+		return errors.New("age is empty")
+	}
+
+	if int(age) < shared.AGE_MIN {
+		return fmt.Errorf("age must not be less than %d", shared.AGE_MIN)
+	}
+
+	if int(age) > shared.AGE_MAX {
+		return fmt.Errorf("age must not be more than %d", shared.AGE_MAX)
+	}
+
+	return nil
+}
+
+func ValidateGender(gender string) error {
+	if gender == "" {
+		return errors.New("gender must not be empty")
+	}
+
+	_, ok := shared.GENDER[gender]
+	if !ok {
+		return fmt.Errorf("the gender, %s, does not exists", gender)
+	}
+
+	return nil
+}

@@ -5,8 +5,8 @@ import "github.com/kylerequez/marketify/src/shared"
 templ Navbar(
 	info shared.PageInfo,
 ) {
-	<nav>
-		<div>Icon</div>
-		<div>Test</div>
+	<nav hx-boost="true">
+		<a href="/login">Login</a>
+		<a href="/signup">Signup</a>
 	</nav>
 }

@@ -1,1 +1,1 @@
-<nav><div>Icon</div><div>Test</div></nav>
+<nav hx-boost=\"true\"><a href=\"/login\">Login</a> <a href=\"/signup\">Signup</a></nav>

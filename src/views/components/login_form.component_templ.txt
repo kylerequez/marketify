@@ -1,11 +1,10 @@
-<form hx-post=\"/api/v1/auth/login\" hx-swap=\"outerHTML\" hx-target=\"this\"><label for=\"email\">Email</label> <input type=\"email\" id=\"email\" name=\"email\" value=\"
-\"> 
-<span>
-</span> 
-<label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" value=\"
-\"> 
-<span>
-</span> 
-<span>
-</span> 
+<form hx-post=\"/api/v1/auth/login\" hx-swap=\"outerHTML\" hx-target=\"this\"><div><label for=\"email\">Email</label>
+<p>
+</p>
+</div><div><label for=\"password\">Password</label>
+<p>
+</p>
+</div>
+<p>
+</p>
 <button type=\"submit\">Login</button></form>

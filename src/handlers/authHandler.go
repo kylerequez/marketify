@@ -25,8 +25,10 @@ func NewAuthHandler(app *fiber.App, us *services.UserService) *AuthHandler {
 func (ah *AuthHandler) Init() error {
 	views := ah.App.Group("")
 	views.Get("/login", ah.GetLoginPage)
+	views.Get("/signup", ah.GetSignupPage)
 
 	api := ah.App.Group("/api/v1/auth")
+	api.Post("/signup", ah.SignupUser)
 	api.Post("/login", ah.LoginUser)
 
 	return nil
@@ -38,4 +40,12 @@ func (ah *AuthHandler) GetLoginPage(c fiber.Ctx) error {
 
 func (ah *AuthHandler) LoginUser(c fiber.Ctx) error {
 	return ah.Us.LoginUser(c)
+}
+
+func (ah *AuthHandler) GetSignupPage(c fiber.Ctx) error {
+	return ah.Us.GetSignupPage(c)
+}
+
+func (ah *AuthHandler) SignupUser(c fiber.Ctx) error {
+	return ah.Us.CreateUser(c)
 }

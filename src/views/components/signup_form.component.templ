@@ -1,0 +1,71 @@
+package components
+
+import "github.com/kylerequez/marketify/src/shared"
+import "strconv"
+
+templ SignupForm(
+	form shared.SignupFormData,
+) {
+	<form hx-post="/api/v1/auth/signup" hx-target="this" hx-swap="outerHTML">
+		<div>
+			<label for="firstname">Firstname</label>
+			@FormInput("firstname", FORM_TYPE["text"], form.Firstname)
+			if form.Errors["firstname"] != "" {
+				<p>{ form.Errors["firstname"] }</p>
+			}
+		</div>
+		<div>
+			<label for="middlename">Middlename</label>
+			@FormInput("middlename", FORM_TYPE["text"], form.Middlename)
+			if form.Errors["middlename"] != "" {
+				<p>{ form.Errors["middlename"] }</p>
+			}
+		</div>
+		<div>
+			<label for="lastname">Lastname</label>
+			@FormInput("lastname", FORM_TYPE["text"], form.Lastname)
+			if form.Errors["lastname"] != "" {
+				<p>{ form.Errors["lastname"] }</p>
+			}
+		</div>
+		<div>
+			<label for="age">Age</label>
+			@FormInput("age", FORM_TYPE["number"], strconv.Itoa(int(form.Age)))
+			if form.Errors["age"] != "" {
+				<p>{ form.Errors["age"] }</p>
+			}
+		</div>
+		<div>
+			<label for="gender">Gender</label>
+			@FormSelect("gender", shared.GENDER, form.Gender)
+			if form.Errors["gender"] != "" {
+				<p>{ form.Errors["gender"] }</p>
+			}
+		</div>
+		<div>
+			<label for="email">Email</label>
+			@FormInput("email", FORM_TYPE["email"], form.Email)
+			if form.Errors["email"] != "" {
+				<p>{ form.Errors["email"] }</p>
+			}
+		</div>
+		<div>
+			<label for="password">Password</label>
+			@FormInput("password", FORM_TYPE["password"], form.Password)
+			if form.Errors["password"] != "" {
+				<p>{ form.Errors["password"] }</p>
+			}
+		</div>
+		<div>
+			<label for="rePassword">Confirm Password</label>
+			@FormInput("rePassword", FORM_TYPE["password"], form.RePassword)
+			if form.Errors["rePassword"] != "" {
+				<p>{ form.Errors["rePassword"] }</p>
+			}
+		</div>
+		if form.Errors["form"] != "" {
+			<p>{ form.Errors["form"] }</p>
+		}
+		<button type="submit">Sign Up</button>
+	</form>
+}

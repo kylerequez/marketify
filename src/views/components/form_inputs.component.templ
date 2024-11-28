@@ -1,0 +1,35 @@
+package components
+
+import "fmt"
+
+var FORM_TYPE = map[string]string{
+	"email":    "email",
+	"password": "password",
+	"text":     "text",
+	"number":   "number",
+}
+
+templ FormInput(
+	name string,
+	inputType string,
+	value string,
+) {
+	<input type={ inputType } id={ name } name={ name } value={ value }/>
+}
+
+templ FormSelect(
+	name string,
+	values map[string]string,
+	selectedValue string,
+) {
+	<select id={ name } name={ name }>
+		<option value="" default>{ fmt.Sprintf("Select a %s", name) }</option>
+		for k, v := range values {
+			if selectedValue == k {
+				<option value={ k } selected>{ v }</option>
+			} else {
+				<option value={ k }>{ v }</option>
+			}
+		}
+	</select>
+}

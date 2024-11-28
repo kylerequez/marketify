@@ -1,0 +1,28 @@
+<form hx-post=\"/api/v1/auth/signup\" hx-target=\"this\" hx-swap=\"outerHTML\"><div><label for=\"firstname\">Firstname</label>
+<p>
+</p>
+</div><div><label for=\"middlename\">Middlename</label>
+<p>
+</p>
+</div><div><label for=\"lastname\">Lastname</label>
+<p>
+</p>
+</div><div><label for=\"age\">Age</label>
+<p>
+</p>
+</div><div><label for=\"gender\">Gender</label>
+<p>
+</p>
+</div><div><label for=\"email\">Email</label>
+<p>
+</p>
+</div><div><label for=\"password\">Password</label>
+<p>
+</p>
+</div><div><label for=\"rePassword\">Confirm Password</label>
+<p>
+</p>
+</div>
+<p>
+</p>
+<button type=\"submit\">Sign Up</button></form>

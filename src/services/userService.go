@@ -1,12 +1,14 @@
 package services
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/gofiber/fiber/v3"
+	"golang.org/x/crypto/bcrypt"
 
+	"github.com/kylerequez/marketify/src/db"
+	"github.com/kylerequez/marketify/src/models"
 	"github.com/kylerequez/marketify/src/repositories"
 	"github.com/kylerequez/marketify/src/shared"
 	"github.com/kylerequez/marketify/src/utils"
@@ -15,12 +17,14 @@ import (
 )
 
 type UserService struct {
-	Ur *repositories.UserRepository
+	Ur    *repositories.UserRepository
+	Store *db.PostgresStorage
 }
 
-func NewUserService(ur *repositories.UserRepository) *UserService {
+func NewUserService(ur *repositories.UserRepository, store *db.PostgresStorage) *UserService {
 	return &UserService{
-		Ur: ur,
+		Ur:    ur,
+		Store: store,
 	}
 }
 
@@ -36,11 +40,6 @@ func (us *UserService) GetLoginPage(c fiber.Ctx) error {
 }
 
 func (us *UserService) LoginUser(c fiber.Ctx) error {
-	info := shared.PageInfo{
-		Title: "Login",
-		Path:  c.Path(),
-	}
-
 	form := shared.LoginFormData{
 		Errors: make(map[string]string),
 	}
@@ -53,7 +52,7 @@ func (us *UserService) LoginUser(c fiber.Ctx) error {
 	body := new(RequestBody)
 	if err := c.Bind().Body(body); err != nil {
 		form.Errors["form"] = err.Error()
-		return utils.Render(c, pages.Login(info, form))
+		return utils.Render(c, components.LoginForm(form))
 	}
 
 	form.Email = body.Email
@@ -85,11 +84,39 @@ func (us *UserService) LoginUser(c fiber.Ctx) error {
 		return utils.Render(c, components.LoginForm(form))
 	}
 
-	log.Print("HER")
-	return c.SendStatus(http.StatusOK)
+	session, err := us.Store.CreateNewSession(*user)
+	if err != nil {
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.LoginForm(form))
+	}
+
+	c.Cookie(&fiber.Cookie{
+		Name:    "marketify-user-session",
+		Value:   user.ID.String(),
+		Expires: session.Expiration,
+	})
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"SESSION": session,
+	})
+}
+
+func (us *UserService) GetSignupPage(c fiber.Ctx) error {
+	info := shared.PageInfo{
+		Title: "Sign Up",
+		Path:  c.Path(),
+	}
+
+	form := shared.SignupFormData{}
+
+	return utils.Render(c, pages.Signup(info, form))
 }
 
 func (us *UserService) CreateUser(c fiber.Ctx) error {
+	form := shared.SignupFormData{
+		Errors: make(map[string]string),
+	}
+
 	type RequestBody struct {
 		Firstname  string
 		Middlename string
@@ -103,46 +130,85 @@ func (us *UserService) CreateUser(c fiber.Ctx) error {
 
 	body := new(RequestBody)
 	if err := c.Bind().Body(body); err != nil {
-		return err
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.SignupForm(form))
 	}
 
+	form.Firstname = body.Firstname
+	form.Middlename = body.Middlename
+	form.Lastname = body.Lastname
+	form.Age = body.Age
+	form.Gender = body.Gender
+	form.Email = body.Email
+	form.Password = body.Password
+	form.RePassword = body.RePassword
+
 	hasError := false
-	errs := make(map[string]string)
 	if err := utils.ValidateName(body.Firstname, "firstname"); err != nil {
 		hasError = true
-		errs["firstname"] = err.Error()
+		form.Errors["firstname"] = err.Error()
 	}
 
 	if err := utils.ValidateName(body.Lastname, "lastname"); err != nil {
 		hasError = true
-		errs["lastname"] = err.Error()
+		form.Errors["lastname"] = err.Error()
+	}
+
+	if err := utils.ValidateAge(body.Age); err != nil {
+		hasError = true
+		form.Errors["age"] = err.Error()
+	}
+
+	if err := utils.ValidateGender(body.Gender); err != nil {
+		hasError = true
+		form.Errors["gender"] = err.Error()
 	}
 
 	if err := utils.ValidateEmail(body.Email); err != nil {
 		hasError = true
-		errs["email"] = err.Error()
+		form.Errors["email"] = err.Error()
 	}
 
 	if err := utils.ValidatePassword(body.Password); err != nil {
 		hasError = true
-		errs["password"] = err.Error()
+		form.Errors["password"] = err.Error()
 	}
 
 	if err := utils.ValidatePassword(body.RePassword); err != nil {
 		hasError = true
-		errs["rePassword"] = err.Error()
+		form.Errors["rePassword"] = err.Error()
 	}
 
 	if !strings.EqualFold(body.Password, body.RePassword) {
 		hasError = true
-		errs["rePassword"] = "passwords are not the same"
+		form.Errors["rePassword"] = "passwords are not the same"
+	}
+
+	hashedPassword, err := utils.EncryptPassword(body.Password, bcrypt.DefaultCost)
+	if err != nil {
+		hasError = true
+		form.Errors["password"] = err.Error()
 	}
 
 	if hasError {
-		return c.JSON(fiber.Map{
-			"success": false,
-			"errors":  errs,
-		})
+		return utils.Render(c, components.SignupForm(form))
+	}
+
+	user := models.User{
+		Firstname:   body.Firstname,
+		Middlename:  body.Middlename,
+		Lastname:    body.Lastname,
+		Age:         body.Age,
+		Gender:      body.Gender,
+		Email:       body.Email,
+		Password:    hashedPassword,
+		Authorities: []string{shared.ROLES["ADMIN"]},
+		Status:      shared.STATUS["UNVERIFIED"],
+	}
+
+	if err := us.Ur.CreateUser(c.Context(), user); err != nil {
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.SignupForm(form))
 	}
 
 	return c.SendStatus(http.StatusOK)

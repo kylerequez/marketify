@@ -29,6 +29,8 @@ func (ur *UserRepository) CreateUser(ctx context.Context, user models.User) erro
             firstname,
             middlename,
             lastname,
+			age,
+			gender,
             email,
             password,
             authorities,
@@ -40,7 +42,9 @@ func (ur *UserRepository) CreateUser(ctx context.Context, user models.User) erro
             $4,
             $5,
             $6,
-            $7
+            $7,
+			$8,
+			$9
         );
         `, ur.Table)
 
@@ -49,7 +53,17 @@ func (ur *UserRepository) CreateUser(ctx context.Context, user models.User) erro
 		return err
 	}
 
-	res, err := ur.Conn.Exec(ctx, sql)
+	res, err := ur.Conn.Exec(ctx, sql,
+		user.Firstname,
+		user.Middlename,
+		user.Lastname,
+		user.Age,
+		user.Gender,
+		user.Email,
+		user.Password,
+		user.Authorities,
+		user.Status,
+	)
 	if err != nil {
 		return err
 	}
@@ -73,7 +87,7 @@ func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mo
             authorities,
             status,
             created_at,
-            updaated_at
+            updated_at
         FROM
             %s
         WHERE

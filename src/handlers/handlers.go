@@ -28,8 +28,13 @@ func Init(app *fiber.App) error {
 		return err
 	}
 
+	store := db.NewPostgresStorage("user_sessions", *config)
+	if err := store.Init(); err != nil {
+		return err
+	}
+
 	ur := repositories.NewUserRepository(database.Conn, shared.TABLES["USERS"])
-	us := services.NewUserService(ur)
+	us := services.NewUserService(ur, store)
 	uh := NewUserHandler(app, us)
 	if err := uh.Init(); err != nil {
 		return err
