@@ -30,6 +30,7 @@ func (ah *AuthHandler) Init() error {
 	api := ah.App.Group("/api/v1/auth")
 	api.Post("/signup", ah.SignupUser)
 	api.Post("/login", ah.LoginUser)
+	api.Post("/logout", ah.LogoutUser)
 
 	return nil
 }
@@ -48,4 +49,8 @@ func (ah *AuthHandler) GetSignupPage(c fiber.Ctx) error {
 
 func (ah *AuthHandler) SignupUser(c fiber.Ctx) error {
 	return ah.Us.CreateUser(c)
+}
+
+func (ah *AuthHandler) LogoutUser(c fiber.Ctx) error {
+	return ah.Us.LogoutUser(c)
 }

@@ -3,8 +3,10 @@ package services
 import (
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/kylerequez/marketify/src/db"
@@ -96,9 +98,7 @@ func (us *UserService) LoginUser(c fiber.Ctx) error {
 		Expires: session.Expiration,
 	})
 
-	return c.Status(http.StatusOK).JSON(fiber.Map{
-		"SESSION": session,
-	})
+	return utils.Redirect(c, http.StatusOK, "/dashboard/users")
 }
 
 func (us *UserService) GetSignupPage(c fiber.Ctx) error {
@@ -212,4 +212,47 @@ func (us *UserService) CreateUser(c fiber.Ctx) error {
 	}
 
 	return c.SendStatus(http.StatusOK)
+}
+
+func (us *UserService) LogoutUser(c fiber.Ctx) error {
+	cookie := c.Cookies("marketify-user-session", "")
+	if cookie == "" {
+		return utils.Redirect(c, http.StatusBadRequest, "/login")
+	}
+	c.Cookie(&fiber.Cookie{
+		Name:    "marketify-user-session",
+		Expires: time.Now().Add(-(time.Hour * 2)),
+	})
+
+	id, err := uuid.Parse(cookie)
+	if err != nil {
+		return utils.Redirect(c, http.StatusBadRequest, "/login")
+	}
+
+	isAlive, err := us.Store.IsSessionAlive(id)
+	if err != nil {
+		return utils.Redirect(c, http.StatusBadRequest, "/login")
+	}
+
+	if !isAlive {
+		return utils.Redirect(c, http.StatusBadRequest, "/login")
+	}
+
+	if err := us.Store.RemoveSession(id); err != nil {
+		return utils.Redirect(c, http.StatusBadRequest, "/login")
+	}
+
+	return utils.Redirect(c, http.StatusOK, "/login")
+}
+
+func (us *UserService) GetUsersPage(c fiber.Ctx) error {
+	info := shared.PageInfo{
+		Title:        "Users",
+		Path:         c.Path(),
+		LoggedInUser: utils.RetrieveLoggedInUser(c, us.Ur),
+	}
+
+	var users []models.User = []models.User{}
+
+	return utils.Render(c, pages.Users(info, users))
 }

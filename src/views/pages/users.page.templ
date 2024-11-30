@@ -1,0 +1,14 @@
+package pages
+
+import "github.com/kylerequez/marketify/src/shared"
+import "github.com/kylerequez/marketify/src/models"
+import "github.com/kylerequez/marketify/src/views/layouts"
+
+templ Users(
+	info shared.PageInfo,
+	users []models.User,
+) {
+	@layouts.Main(info) {
+		<div>Users</div>
+	}
+}

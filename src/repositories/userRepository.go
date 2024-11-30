@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
 	"github.com/kylerequez/marketify/src/models"
@@ -104,6 +105,57 @@ func (ur *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mo
 	var user models.User
 	row := ur.Conn.QueryRow(ctx, sql,
 		email,
+	)
+	if err := row.Scan(
+		&user.ID,
+		&user.Firstname,
+		&user.Middlename,
+		&user.Lastname,
+		&user.Email,
+		&user.Password,
+		&user.Authorities,
+		&user.Status,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	); err != nil {
+		if errors.Is(pgx.ErrNoRows, err) {
+			return nil, errors.New("user does not exist")
+		}
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func (ur *UserRepository) GetUserById(ctx context.Context, id uuid.UUID) (*models.User, error) {
+	sql := fmt.Sprintf(`
+        SELECT
+            id,
+            firstname,
+            middlename,
+            lastname,
+            email,
+            password,
+            authorities,
+            status,
+            created_at,
+            updated_at
+        FROM
+            %s
+        WHERE
+            id = $1
+        LIMIT
+            1;
+        `, ur.Table)
+
+	_, err := ur.Conn.Prepare(ctx, sql, sql)
+	if err != nil {
+		return nil, err
+	}
+
+	var user models.User
+	row := ur.Conn.QueryRow(ctx, sql,
+		id,
 	)
 	if err := row.Scan(
 		&user.ID,

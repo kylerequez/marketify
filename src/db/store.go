@@ -71,3 +71,20 @@ func (storage *PostgresStorage) IsSessionAlive(userId uuid.UUID) (bool, error) {
 
 	return true, nil
 }
+
+func (storage *PostgresStorage) RemoveSession(userId uuid.UUID) error {
+	isAlive, err := storage.IsSessionAlive(userId)
+	if err != nil {
+		return err
+	}
+
+	if !isAlive {
+		return errors.New("session does not exist")
+	}
+
+	if err := storage.Storage.Delete(userId.String()); err != nil {
+		return err
+	}
+
+	return nil
+}
