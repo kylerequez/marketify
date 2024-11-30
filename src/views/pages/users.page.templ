@@ -3,12 +3,21 @@ package pages
 import "github.com/kylerequez/marketify/src/shared"
 import "github.com/kylerequez/marketify/src/models"
 import "github.com/kylerequez/marketify/src/views/layouts"
+import "github.com/kylerequez/marketify/src/views/components"
 
 templ Users(
 	info shared.PageInfo,
 	users []models.User,
 ) {
 	@layouts.Main(info) {
-		<div>Users</div>
+		<div>
+			if len(users) <= 0 {
+				<p>
+					No users
+				</p>
+			} else {
+				@components.UsersContainer(users)
+			}
+		</div>
 	}
 }

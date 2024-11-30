@@ -8,19 +8,29 @@ import (
 )
 
 type UserHandler struct {
-	App *fiber.App
-	Us  *services.UserService
+	App        *fiber.App
+	Us         *services.UserService
+	Middleware *middlewares.MiddlewareHandler
 }
 
-func NewUserHandler(app *fiber.App, us *services.UserService) *UserHandler {
+func NewUserHandler(
+	app *fiber.App,
+	us *services.UserService,
+	mh *middlewares.MiddlewareHandler,
+) *UserHandler {
 	return &UserHandler{
-		App: app,
-		Us:  us,
+		App:        app,
+		Us:         us,
+		Middleware: mh,
 	}
 }
 
 func (uh *UserHandler) Init() error {
-	adminView := uh.App.Group("/dashboard", middlewares.IsLoggedIn)
+	adminView := uh.App.Group(
+		"/dashboard",
+		uh.Middleware.IsLoggedIn,
+		uh.Middleware.IsAdmin,
+	)
 	adminView.Get("/users", uh.GetUsersPage)
 
 	return nil

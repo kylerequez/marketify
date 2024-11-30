@@ -252,7 +252,10 @@ func (us *UserService) GetUsersPage(c fiber.Ctx) error {
 		LoggedInUser: utils.RetrieveLoggedInUser(c, us.Ur),
 	}
 
-	var users []models.User = []models.User{}
+	users, err := us.Ur.GetAllUsers(c.Context())
+	if err != nil {
+		return utils.Render(c, pages.Users(info, *users))
+	}
 
-	return utils.Render(c, pages.Users(info, users))
+	return utils.Render(c, pages.Users(info, *users))
 }

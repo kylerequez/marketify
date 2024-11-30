@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 
 	"github.com/kylerequez/marketify/src/db"
+	"github.com/kylerequez/marketify/src/middlewares"
 	"github.com/kylerequez/marketify/src/repositories"
 	"github.com/kylerequez/marketify/src/services"
 	"github.com/kylerequez/marketify/src/shared"
@@ -34,8 +35,9 @@ func Init(app *fiber.App) error {
 	}
 
 	ur := repositories.NewUserRepository(database.Conn, shared.TABLES["USERS"])
+	mh := middlewares.NewMiddlewareHandler(ur)
 	us := services.NewUserService(ur, store)
-	uh := NewUserHandler(app, us)
+	uh := NewUserHandler(app, us, mh)
 	if err := uh.Init(); err != nil {
 		return err
 	}

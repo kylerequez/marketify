@@ -1,4 +1,4 @@
 <nav hx-boost=\"true\">
 <a href=\"/login\">Login</a> <a href=\"/signup\">Signup</a>
-<a href=\"/dashboard/users\">User</a> <button type=\"button\" hx-post=\"/api/v1/auth/logout\">Logout</button>
+<a href=\"/dashboard/users\">Users</a> <button type=\"button\" hx-post=\"/api/v1/auth/logout\">Logout</button>
 </nav>

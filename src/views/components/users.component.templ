@@ -1,0 +1,24 @@
+package components
+
+import "github.com/kylerequez/marketify/src/models"
+import "fmt"
+
+templ UsersContainer(
+	users []models.User,
+) {
+	for _, user := range users {
+		@UserCard(user)
+	}
+}
+
+templ UserCard(
+	user models.User,
+) {
+	<div id={ user.ID.String() } style="border: solid 1px black; border-radius: 5px;">
+		<p>{ fmt.Sprintf("%s %s %s", user.Firstname, user.Middlename, user.Lastname) }</p>
+		<p>{ user.Email }</p>
+		<p>{ fmt.Sprintf("%v", user.Authorities) }</p>
+		<p>Created At: { user.CreatedAt.Format("MM:DD:YY HH:MM:SS") }</p>
+		<p>Updated At: { user.UpdatedAt.Format("MM:DD:YY HH:MM:SS") }</p>
+	</div>
+}
