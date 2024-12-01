@@ -1,7 +1,6 @@
 package servers
 
 import (
-	"fmt"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -56,11 +55,5 @@ func (server *MarketifyServer) Run() error {
 		return err
 	}
 
-	return app.Listen(
-		fmt.Sprintf(
-			"%s:%s",
-			server.Config.Hostname,
-			server.Config.Port,
-		),
-	)
+	return app.Listen(server.Config.Hostname + ":" + server.Config.Port)
 }

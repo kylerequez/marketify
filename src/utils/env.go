@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 
@@ -22,7 +21,7 @@ func LoadEnv() error {
 func GetEnv(key string) (*string, error) {
 	value := os.Getenv(key)
 	if value == "" {
-		return nil, errors.New(fmt.Sprintf("%s is not found", key))
+		return nil, errors.New(key + "is not found")
 	}
 	return &value, nil
 }

@@ -1,7 +1,5 @@
 package components
 
-import "fmt"
-
 var FORM_TYPE = map[string]string{
 	"email":    "email",
 	"password": "password",
@@ -23,7 +21,7 @@ templ FormSelect(
 	selectedValue string,
 ) {
 	<select id={ name } name={ name }>
-		<option value="" default>{ fmt.Sprintf("Select a %s", name) }</option>
+		<option value="" default>{ "Select a " + name }</option>
 		for k, v := range values {
 			if selectedValue == k {
 				<option value={ k } selected>{ v }</option>
