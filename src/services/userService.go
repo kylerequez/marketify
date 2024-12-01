@@ -81,6 +81,11 @@ func (us *UserService) LoginUser(c fiber.Ctx) error {
 		return utils.Render(c, components.LoginForm(form))
 	}
 
+	if user.Status != shared.STATUS["ACTIVE"] {
+		form.Errors["form"] = "user is currently " + user.Status
+		return utils.Render(c, components.LoginForm(form))
+	}
+
 	if err := utils.ComparePassword(user.Password, []byte(body.Password)); err != nil {
 		form.Errors["password"] = err.Error()
 		return utils.Render(c, components.LoginForm(form))
