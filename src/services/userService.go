@@ -99,7 +99,7 @@ func (us *UserService) LoginUser(c fiber.Ctx) error {
 
 	c.Cookie(&fiber.Cookie{
 		Name:    "marketify-user-session",
-		Value:   user.ID.String(),
+		Value:   session.ID,
 		Expires: session.Expiration,
 	})
 
@@ -254,7 +254,7 @@ func (us *UserService) GetUsersPage(c fiber.Ctx) error {
 	info := shared.PageInfo{
 		Title:        "Users",
 		Path:         c.Path(),
-		LoggedInUser: utils.RetrieveLoggedInUser(c, us.Ur),
+		LoggedInUser: utils.RetrieveLoggedInUser(c),
 	}
 
 	users, err := us.Ur.GetAllUsers(c.Context())

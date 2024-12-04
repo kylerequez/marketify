@@ -2,13 +2,11 @@ package shared
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type UserSession struct {
-	ID         uuid.UUID
-	Value      string
+	ID         string
+	Value      []byte
 	Expiration time.Time
 }
 

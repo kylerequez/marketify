@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/storage/postgres/v3"
 	"github.com/google/uuid"
+
 	"github.com/kylerequez/marketify/src/models"
 	"github.com/kylerequez/marketify/src/shared"
 )
@@ -47,13 +48,13 @@ func (storage *PostgresStorage) CreateNewSession(user models.User) (*shared.User
 	}
 
 	session := shared.UserSession{
-		ID:         user.ID,
-		Value:      sessionId.String(),
+		ID:         sessionId.String(),
+		Value:      []byte(user.ID.String()),
 		Expiration: time.Now().Add(shared.USER_SESSION_LIFESPAN),
 	}
 
 	if err := storage.Storage.Set(
-		session.ID.String(),
+		session.ID,
 		[]byte(session.Value),
 		shared.USER_SESSION_LIFESPAN,
 	); err != nil {
@@ -63,8 +64,30 @@ func (storage *PostgresStorage) CreateNewSession(user models.User) (*shared.User
 	return &session, nil
 }
 
-func (storage *PostgresStorage) IsSessionAlive(userId uuid.UUID) (bool, error) {
-	_, err := storage.Storage.Get(userId.String())
+func (storage *PostgresStorage) GetSession(id uuid.UUID) (*shared.UserSession, error) {
+	isAlive, err := storage.IsSessionAlive(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isAlive {
+		return nil, errors.New("session does not exists")
+	}
+
+	value, err := storage.Storage.Get(id.String())
+	if err != nil {
+		return nil, err
+	}
+
+	session := shared.UserSession{
+		Value: value,
+	}
+
+	return &session, nil
+}
+
+func (storage *PostgresStorage) IsSessionAlive(id uuid.UUID) (bool, error) {
+	_, err := storage.Storage.Get(id.String())
 	if err != nil {
 		return false, err
 	}

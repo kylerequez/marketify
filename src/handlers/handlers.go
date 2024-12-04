@@ -35,7 +35,7 @@ func Init(app *fiber.App) error {
 	}
 
 	ur := repositories.NewUserRepository(database.Conn, shared.TABLES["USERS"])
-	mh := middlewares.NewMiddlewareHandler(ur)
+	mh := middlewares.NewMiddlewareHandler(ur, store)
 	us := services.NewUserService(ur, store)
 	uh := NewUserHandler(app, us, mh)
 	if err := uh.Init(); err != nil {
