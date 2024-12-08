@@ -15,10 +15,12 @@ templ UserCard(
 	user models.User,
 ) {
 	<div id={ user.ID.String() } style="border: solid 1px black; border-radius: 5px;">
-		<p>{ fmt.Sprintf("%s %s %s", user.Firstname, user.Middlename, user.Lastname) }</p>
-		<p>{ user.Email }</p>
-		<p>{ fmt.Sprintf("%v", user.Authorities) }</p>
-		<p>Created At: { fmt.Sprintf("%s %d, %d", user.CreatedAt.Month(), user.CreatedAt.Day(), user.CreatedAt.Year()) }</p>
-		<p>Updated At: { fmt.Sprintf("%s %d, %d", user.UpdatedAt.Month(), user.UpdatedAt.Day(), user.UpdatedAt.Year()) }</p>
+		<a href={ templ.SafeURL("/dashboard/users/" + user.ID.String()) }>
+			<p>{ fmt.Sprintf("%s %s %s", user.Firstname, user.Middlename, user.Lastname) }</p>
+			<p>{ user.Email }</p>
+			<p>{ fmt.Sprintf("%v", user.Authorities) }</p>
+			<p>Created At: { fmt.Sprintf("%s %d, %d", user.CreatedAt.Month(), user.CreatedAt.Day(), user.CreatedAt.Year()) }</p>
+			<p>Updated At: { fmt.Sprintf("%s %d, %d", user.UpdatedAt.Month(), user.UpdatedAt.Day(), user.UpdatedAt.Year()) }</p>
+		</a>
 	</div>
 }

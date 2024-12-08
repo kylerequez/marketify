@@ -27,15 +27,36 @@ func NewUserHandler(
 
 func (uh *UserHandler) Init() error {
 	adminView := uh.App.Group(
-		"/dashboard",
+		"/dashboard/users",
 		uh.Middleware.IsLoggedIn,
 		uh.Middleware.IsAdmin,
 	)
-	adminView.Get("/users", uh.GetUsersPage)
+	adminView.Get("/", uh.GetUsersPage)
+	adminView.Get("/:id", uh.GetUserPage)
+
+	adminApi := uh.App.Group(
+		"/api/v1/users",
+		uh.Middleware.IsLoggedIn,
+		uh.Middleware.IsAdmin,
+	)
+	adminApi.Get("/:id/edit", uh.GetUserEditForm)
+	adminApi.Get("/:id/delete", uh.GetUserDeleteForm)
 
 	return nil
 }
 
 func (uh *UserHandler) GetUsersPage(c fiber.Ctx) error {
 	return uh.Us.GetUsersPage(c)
+}
+
+func (uh *UserHandler) GetUserPage(c fiber.Ctx) error {
+	return uh.Us.GetUserPage(c)
+}
+
+func (uh *UserHandler) GetUserEditForm(c fiber.Ctx) error {
+	return uh.Us.GetUserEditForm(c)
+}
+
+func (uh *UserHandler) GetUserDeleteForm(c fiber.Ctx) error {
+	return uh.Us.GetUserDeleteForm(c)
 }

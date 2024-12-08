@@ -7,7 +7,7 @@
 </div><div><label for=\"lastname\">Lastname</label>
 <p>
 </p>
-</div><div><label for=\"age\">Age</label>
+</div><div><label for=\"birthdate\">Birthdate</label>
 <p>
 </p>
 </div><div><label for=\"gender\">Gender</label>

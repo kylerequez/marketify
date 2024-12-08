@@ -4,9 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"net/mail"
+	"time"
 
 	"github.com/kylerequez/marketify/src/shared"
 )
+
+func ValidateId(id string) error {
+	if id == "" {
+		return errors.New("id is empty")
+	}
+
+	return nil
+}
 
 func ValidateName(name, key string) error {
 	if name == "" {
@@ -81,5 +90,9 @@ func ValidateGender(gender string) error {
 		return fmt.Errorf("the gender, %s, does not exists", gender)
 	}
 
+	return nil
+}
+
+func ValidateDate(date time.Time, dateType string) error {
 	return nil
 }

@@ -9,7 +9,6 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/kylerequez/marketify/src/shared"
-import "strconv"
 
 func SignupForm(
 	form shared.SignupFormData,
@@ -50,7 +49,7 @@ func SignupForm(
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["firstname"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 14, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 13, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -77,7 +76,7 @@ func SignupForm(
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["middlename"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 21, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 20, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -104,7 +103,7 @@ func SignupForm(
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["lastname"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 28, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 27, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -119,19 +118,19 @@ func SignupForm(
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = FormInput("age", FORM_TYPE["number"], strconv.Itoa(int(form.Age))).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = FormInput("birthdate", FORM_TYPE["date"], form.Birthdate).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if form.Errors["age"] != "" {
+		if form.Errors["birthdate"] != "" {
 			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["age"])
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["birthdate"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 35, Col: 27}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 34, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -158,7 +157,7 @@ func SignupForm(
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["gender"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 42, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 41, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -185,7 +184,7 @@ func SignupForm(
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["email"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 49, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 48, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -212,7 +211,7 @@ func SignupForm(
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["password"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 56, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 55, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -239,7 +238,7 @@ func SignupForm(
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["rePassword"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 63, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 62, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -262,7 +261,7 @@ func SignupForm(
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(form.Errors["form"])
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 67, Col: 27}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/signup_form.component.templ`, Line: 66, Col: 27}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

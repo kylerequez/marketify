@@ -1,0 +1,15 @@
+package pages
+
+import "github.com/kylerequez/marketify/src/shared"
+import "github.com/kylerequez/marketify/src/models"
+import "github.com/kylerequez/marketify/src/views/layouts"
+import "github.com/kylerequez/marketify/src/views/components"
+
+templ User(
+	info shared.PageInfo,
+	user models.User,
+) {
+	@layouts.Main(info) {
+		@components.UserPageCard(user)
+	}
+}

@@ -1,7 +1,6 @@
 package components
 
 import "github.com/kylerequez/marketify/src/shared"
-import "strconv"
 
 templ SignupForm(
 	form shared.SignupFormData,
@@ -29,10 +28,10 @@ templ SignupForm(
 			}
 		</div>
 		<div>
-			<label for="age">Age</label>
-			@FormInput("age", FORM_TYPE["number"], strconv.Itoa(int(form.Age)))
-			if form.Errors["age"] != "" {
-				<p>{ form.Errors["age"] }</p>
+			<label for="birthdate">Birthdate</label>
+			@FormInput("birthdate", FORM_TYPE["date"], form.Birthdate)
+			if form.Errors["birthdate"] != "" {
+				<p>{ form.Errors["birthdate"] }</p>
 			}
 		</div>
 		<div>

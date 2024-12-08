@@ -1,0 +1,123 @@
+package components
+
+import "github.com/kylerequez/marketify/src/models"
+import "github.com/kylerequez/marketify/src/shared"
+import "github.com/google/uuid"
+
+templ UserPageCard(
+	user models.User,
+) {
+	<div id="user-card">
+		<div>
+			<label for="firstname">Firstname</label>
+			<div>{ user.Firstname }</div>
+		</div>
+		<div>
+			<label for="middlename">Middlename</label>
+			<div>{ user.Middlename }</div>
+		</div>
+		<div>
+			<label for="lastname">Lastname</label>
+			<div>{ user.Lastname }</div>
+		</div>
+		<div>
+			<label for="birthdate">Birthdate</label>
+			<div>{ user.Birthdate.Format(shared.DATE_FORMAT) } </div>
+		</div>
+		<div>
+			<label for="gender">Gender</label>
+			<div>{ shared.GENDER[user.Gender] }</div>
+		</div>
+		<div>
+			<label for="email">Email</label>
+			<div>{ user.Email }</div>
+		</div>
+		<button
+			hx-get={ "/api/v1/users/" + user.ID.String() + "/edit" }
+			hx-target="#user-card"
+			hx-swap="innerHTML"
+		>
+			Edit
+		</button>
+		<button
+			hx-get={ "/api/v1/users/" + user.ID.String() + "/delete" }
+			hx-target="#user-card"
+			hx-swap="innerHTML"
+		>
+			Delete
+		</button>
+	</div>
+}
+
+templ UserEditForm(
+	form shared.EditUserFormData,
+) {
+	<form>
+		<div>
+			<label for="firstname">Firstname</label>
+			@FormInput("firstname", FORM_TYPE["text"], form.Firstname)
+			if form.Errors["firstname"] != "" {
+				<p>{ form.Errors["firstname"] }</p>
+			}
+		</div>
+		<div>
+			<label for="middlename">Middlename</label>
+			@FormInput("middlename", FORM_TYPE["text"], form.Middlename)
+			if form.Errors["middlename"] != "" {
+				<p>{ form.Errors["middlename"] }</p>
+			}
+		</div>
+		<div>
+			<label for="lastname">Lastname</label>
+			@FormInput("lastname", FORM_TYPE["text"], form.Lastname)
+			if form.Errors["lastname"] != "" {
+				<p>{ form.Errors["lastname"] }</p>
+			}
+		</div>
+		<div>
+			<label for="gender">Gender</label>
+			@FormSelect("gender", shared.GENDER, form.Gender)
+			if form.Errors["gender"] != "" {
+				<p>{ form.Errors["gender"] }</p>
+			}
+		</div>
+		<div>
+			<label for="email">Email</label>
+			@FormInput("email", FORM_TYPE["email"], form.Email)
+			if form.Errors["email"] != "" {
+				<p>{ form.Errors["email"] }</p>
+			}
+		</div>
+		if form.Errors["form"] != "" {
+			<p>{ form.Errors["form"] }</p>
+		}
+		<button
+			hx-post={ "/api/v1/users/" + form.ID.String() }
+			hx-target="#user-card"
+			hx-swap="innerHTML"
+		>
+			Save
+		</button>
+		<button>
+			<a href={ templ.SafeURL("/dashboard/users/" + form.ID.String()) }>
+				Cancel
+			</a>
+		</button>
+	</form>
+}
+
+templ UserDeleteForm(
+	id uuid.UUID,
+) {
+	<div>
+		Are you sure you want to delete this user?
+		<button
+			hx-delete={ "/api/v1/users/" + id.String() }
+		>Delete</button>
+		<button>
+			<a href={ templ.SafeURL("/dashboard/users/" + id.String()) }>
+				Cancel
+			</a>
+		</button>
+	</div>
+}
