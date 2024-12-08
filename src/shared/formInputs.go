@@ -11,3 +11,5 @@ const NAME_MAX_LENGTH int = 50
 const AGE_MIN int = 18
 
 const AGE_MAX int = 100
+
+const DATE_FORMAT string = "January 2, 2006"

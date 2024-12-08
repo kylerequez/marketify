@@ -11,7 +11,7 @@ type User struct {
 	Firstname   string
 	Middlename  string
 	Lastname    string
-	Age         uint
+	Birthdate   time.Time
 	Gender      string
 	Email       string
 	Password    []byte

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -126,7 +127,7 @@ func (us *UserService) CreateUser(c fiber.Ctx) error {
 		Firstname  string
 		Middlename string
 		Lastname   string
-		Age        uint
+		Birthdate  string
 		Gender     string
 		Email      string
 		Password   string
@@ -142,7 +143,7 @@ func (us *UserService) CreateUser(c fiber.Ctx) error {
 	form.Firstname = body.Firstname
 	form.Middlename = body.Middlename
 	form.Lastname = body.Lastname
-	form.Age = body.Age
+	form.Birthdate = body.Birthdate
 	form.Gender = body.Gender
 	form.Email = body.Email
 	form.Password = body.Password
@@ -159,9 +160,10 @@ func (us *UserService) CreateUser(c fiber.Ctx) error {
 		form.Errors["lastname"] = err.Error()
 	}
 
-	if err := utils.ValidateAge(body.Age); err != nil {
+	birthdate, err := time.Parse("2006-01-02", body.Birthdate)
+	if err != nil {
 		hasError = true
-		form.Errors["age"] = err.Error()
+		form.Errors["birthdate"] = err.Error()
 	}
 
 	if err := utils.ValidateGender(body.Gender); err != nil {
@@ -203,7 +205,7 @@ func (us *UserService) CreateUser(c fiber.Ctx) error {
 		Firstname:   body.Firstname,
 		Middlename:  body.Middlename,
 		Lastname:    body.Lastname,
-		Age:         body.Age,
+		Birthdate:   birthdate,
 		Gender:      body.Gender,
 		Email:       body.Email,
 		Password:    hashedPassword,
@@ -263,4 +265,65 @@ func (us *UserService) GetUsersPage(c fiber.Ctx) error {
 	}
 
 	return utils.Render(c, pages.Users(info, *users))
+}
+
+func (us *UserService) GetUserPage(c fiber.Ctx) error {
+	info := shared.PageInfo{
+		Title:        "User",
+		Path:         c.Path(),
+		LoggedInUser: utils.RetrieveLoggedInUser(c),
+	}
+
+	id := c.Params("id")
+	if err := utils.ValidateId(id); err != nil {
+		return c.Status(http.StatusBadRequest).Redirect().Back()
+	}
+
+	userId, err := uuid.Parse(id)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).Redirect().Back()
+	}
+
+	user, err := us.Ur.GetUserById(c.Context(), userId)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).Redirect().Back()
+	}
+
+	return utils.Render(c, pages.User(info, *user))
+}
+
+func (us *UserService) GetUserEditForm(c fiber.Ctx) error {
+	id := c.Params("id")
+	if err := utils.ValidateId(id); err != nil {
+		log.Println(err)
+		return c.Redirect().Back()
+	}
+
+	userId, err := uuid.Parse(id)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect().Back()
+	}
+
+	user, err := us.Ur.GetUserById(c.Context(), userId)
+	if err != nil {
+		log.Println(err)
+		return c.Redirect().Back()
+	}
+
+	form := shared.EditUserFormData{
+		ID:         user.ID,
+		Firstname:  user.Firstname,
+		Middlename: user.Middlename,
+		Lastname:   user.Lastname,
+		Gender:     user.Gender,
+		Email:      user.Email,
+		Errors:     make(map[string]string),
+	}
+
+	return utils.Render(c, components.UserEditForm(form))
+}
+
+func (us *UserService) GetUserDeleteForm(c fiber.Ctx) error {
+	return nil
 }
