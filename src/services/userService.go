@@ -325,5 +325,128 @@ func (us *UserService) GetUserEditForm(c fiber.Ctx) error {
 }
 
 func (us *UserService) GetUserDeleteForm(c fiber.Ctx) error {
-	return nil
+	id := c.Params("id")
+	if id == "" {
+		return c.Redirect().Back()
+	}
+
+	userId, err := uuid.Parse(id)
+	if err != nil {
+		return c.Redirect().Back()
+	}
+
+	return utils.Render(c, components.UserDeleteForm(userId))
+}
+
+func (us *UserService) UpdateUser(c fiber.Ctx) error {
+	form := shared.EditUserFormData{
+		Errors: make(map[string]string),
+	}
+
+	id := c.Params("id")
+	if id == "" {
+		return c.Redirect().Back()
+	}
+
+	userId, err := uuid.Parse(id)
+	if err != nil {
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.UserEditForm(form))
+	}
+
+	type RequestBody struct {
+		Firstname  string
+		Middlename string
+		Lastname   string
+		Gender     string
+		Email      string
+	}
+
+	body := new(RequestBody)
+	if err := c.Bind().Body(body); err != nil {
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.UserEditForm(form))
+	}
+
+	form.Firstname = body.Firstname
+	form.Middlename = body.Middlename
+	form.Lastname = body.Lastname
+	form.Gender = body.Gender
+	form.Email = body.Email
+
+	hasErrors := false
+	if err := utils.ValidateName(body.Firstname, "firstname"); err != nil {
+		hasErrors = true
+		form.Errors["firstname"] = err.Error()
+	}
+
+	if err := utils.ValidateName(body.Lastname, "lastname"); err != nil {
+		hasErrors = true
+		form.Errors["lastname"] = err.Error()
+	}
+
+	if err := utils.ValidateGender(body.Gender); err != nil {
+		hasErrors = true
+		form.Errors["gender"] = err.Error()
+	}
+
+	if err := utils.ValidateEmail(body.Email); err != nil {
+		hasErrors = true
+		form.Errors["email"] = err.Error()
+	}
+
+	if hasErrors {
+		return utils.Render(c, components.UserEditForm(form))
+	}
+
+	user, err := us.Ur.GetUserById(c.Context(), userId)
+	if err != nil {
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.UserEditForm(form))
+	}
+
+	isExists, err := us.Ur.GetUserByEmail(c.Context(), body.Email)
+	if err != nil {
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.UserEditForm(form))
+	}
+
+	if isExists != nil && user.ID != isExists.ID {
+		form.Errors["email"] = "email already exists"
+		return utils.Render(c, components.UserEditForm(form))
+	}
+
+	updatedUser := models.User{
+		ID:         userId,
+		Firstname:  body.Firstname,
+		Middlename: body.Middlename,
+		Lastname:   body.Lastname,
+		Gender:     body.Gender,
+		Email:      body.Email,
+	}
+
+	if err := us.Ur.UpdateUser(c.Context(), updatedUser); err != nil {
+		form.Errors["form"] = err.Error()
+		return utils.Render(c, components.UserEditForm(form))
+	}
+
+	return utils.Redirect(c, 200, "/dashboard/users/"+userId.String())
+}
+
+func (us *UserService) DeleteUser(c fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Redirect().Back()
+	}
+
+	userId, err := uuid.Parse(id)
+	if err != nil {
+		return c.Redirect().Back()
+	}
+
+	if err := us.Ur.DeleteUserById(c.Context(), userId); err != nil {
+		return nil
+	}
+
+	return utils.Render(c, components.UserDeleteForm(userId))
 }

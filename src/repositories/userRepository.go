@@ -278,3 +278,68 @@ func (ur *UserRepository) IsRole(ctx context.Context, id uuid.UUID, role string)
 
 	return slices.Contains(user.Authorities, role), nil
 }
+
+func (ur *UserRepository) UpdateUser(ctx context.Context, user models.User) error {
+	sql := fmt.Sprintf(`
+		UPDATE %s
+			SET
+				firstname = $1,
+				middlename = $2,
+				lastname = $3,
+				gender = $4,
+				email = $5
+		WHERE
+			id = $6
+		`, ur.Table)
+
+	_, err := ur.Conn.Prepare(ctx, sql, sql)
+	if err != nil {
+		return err
+	}
+
+	result, err := ur.Conn.Exec(ctx, sql,
+		user.Firstname,
+		user.Middlename,
+		user.Lastname,
+		user.Gender,
+		user.Email,
+		user.ID,
+	)
+	if err != nil {
+		return err
+	}
+
+	if count := result.RowsAffected(); count < 1 {
+		return errors.New("user was not updated")
+	}
+
+	return nil
+}
+
+func (ur *UserRepository) DeleteUserById(ctx context.Context, id uuid.UUID) error {
+	sql := fmt.Sprintf(`
+		DELETE FROM
+			%s
+		WHERE
+			id = $1;
+		`, ur.Table)
+
+	_, err := ur.Conn.Prepare(ctx, sql, sql)
+	if err != nil {
+		return err
+	}
+
+	res, err := ur.Conn.Exec(ctx, sql,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+
+	count := res.RowsAffected()
+	if count < 1 {
+		return errors.New("user was not deleted")
+	}
+
+	return nil
+}
