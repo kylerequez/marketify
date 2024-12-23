@@ -11,8 +11,18 @@ import templruntime "github.com/a-h/templ/runtime"
 import "github.com/kylerequez/marketify/src/models"
 import "fmt"
 
+import "github.com/kylerequez/marketify/src/shared"
+import "slices"
+
+func hasRoles(roles []string, user *models.User) bool {
+	return slices.ContainsFunc(roles, func(role string) bool {
+		return slices.Contains(user.Authorities, role)
+	})
+}
+
 func UsersContainer(
 	users []models.User,
+	loggedInUser *models.User,
 ) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -35,9 +45,14 @@ func UsersContainer(
 		}
 		ctx = templ.ClearChildren(ctx)
 		for _, user := range users {
-			templ_7745c5c3_Err = UserCard(user).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+			if user.ID == loggedInUser.ID {
+			} else if hasRoles([]string{shared.ROLES["ADMIN"]}, loggedInUser) {
+				if hasRoles(shared.ADMIN_ASSIGNED_ROLES, &user) {
+					templ_7745c5c3_Err = UserCard(user).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
 			}
 		}
 		return templ_7745c5c3_Err
@@ -74,7 +89,7 @@ func UserCard(
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(user.ID.String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 17, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 32, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -96,7 +111,7 @@ func UserCard(
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s %s %s", user.Firstname, user.Middlename, user.Lastname))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 19, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 34, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -109,7 +124,7 @@ func UserCard(
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(user.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 20, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 35, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -122,7 +137,7 @@ func UserCard(
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%v", user.Authorities))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 21, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 36, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -135,7 +150,7 @@ func UserCard(
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s %d, %d", user.CreatedAt.Month(), user.CreatedAt.Day(), user.CreatedAt.Year()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 22, Col: 113}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 37, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -148,7 +163,7 @@ func UserCard(
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s %d, %d", user.UpdatedAt.Month(), user.UpdatedAt.Day(), user.UpdatedAt.Year()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 23, Col: 113}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `src/views/components/users.component.templ`, Line: 38, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {

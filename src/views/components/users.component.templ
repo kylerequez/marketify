@@ -3,11 +3,26 @@ package components
 import "github.com/kylerequez/marketify/src/models"
 import "fmt"
 
+import "github.com/kylerequez/marketify/src/shared"
+import "slices"
+
+func hasRoles(roles []string, user *models.User) bool {
+	return slices.ContainsFunc(roles, func(role string) bool {
+		return slices.Contains(user.Authorities, role)
+	})
+}
+
 templ UsersContainer(
 	users []models.User,
+	loggedInUser *models.User,
 ) {
 	for _, user := range users {
-		@UserCard(user)
+		if (user.ID == loggedInUser.ID) {
+		} else if (hasRoles([]string{shared.ROLES["ADMIN"]}, loggedInUser)) {
+			if (hasRoles(shared.ADMIN_ASSIGNED_ROLES, &user)) {
+				@UserCard(user)
+			}
+		}
 	}
 }
 

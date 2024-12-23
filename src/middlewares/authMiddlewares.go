@@ -60,7 +60,7 @@ func (mh *MiddlewareHandler) IsAdmin(c fiber.Ctx) error {
 	log.Println("IS ADMIN MIDDLEWARE")
 
 	user, ok := c.Locals("loggedInUser").(*models.User)
-	if !ok && user == nil {
+	if !ok {
 		return c.Status(http.StatusForbidden).JSON(fiber.Map{
 			"error": "user is not logged in",
 		})

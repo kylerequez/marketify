@@ -16,7 +16,7 @@ templ Users(
 					No users
 				</p>
 			} else {
-				@components.UsersContainer(users)
+				@components.UsersContainer(users, info.LoggedInUser)
 			}
 		</div>
 	}

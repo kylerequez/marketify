@@ -41,6 +41,8 @@ func (uh *UserHandler) Init() error {
 	)
 	adminApi.Get("/:id/edit", uh.GetUserEditForm)
 	adminApi.Get("/:id/delete", uh.GetUserDeleteForm)
+	adminApi.Post("/:id", uh.EditUser)
+	adminApi.Delete("/:id", uh.DeleteUser)
 
 	return nil
 }
@@ -59,4 +61,12 @@ func (uh *UserHandler) GetUserEditForm(c fiber.Ctx) error {
 
 func (uh *UserHandler) GetUserDeleteForm(c fiber.Ctx) error {
 	return uh.Us.GetUserDeleteForm(c)
+}
+
+func (uh *UserHandler) EditUser(c fiber.Ctx) error {
+	return uh.Us.EditUser(c)
+}
+
+func (uh *UserHandler) DeleteUser(c fiber.Ctx) error {
+	return uh.Us.DeleteUser(c)
 }

@@ -6,3 +6,9 @@ var ROLES = map[string]string{
 	"SELLER":   "seller",
 	"APPROVER": "approver",
 }
+
+var ADMIN_ASSIGNED_ROLES = []string{
+	ROLES["SELLER"],
+	ROLES["APPROVER"],
+	ROLES["USER"],
+}
